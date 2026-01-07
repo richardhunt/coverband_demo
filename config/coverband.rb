@@ -63,7 +63,7 @@ Coverband.configure do |config|
   # config.safe_reload_files = ['bin/script_test.rb']
 
   # Logging when debugging
-  config.logger = Rails.logger
+  config.logger = defined?(Rails) ? Rails.logger : Logger.new($stdout)
 
   # config options false, true, or 'debug'. Always use false in production
   # true and debug can give helpful and interesting code usage information
