@@ -1,40 +1,91 @@
 # Coverband Demo
 
-This is a Rails 5 application to demo how to use [Coverband](https://github.com/danmayer/coverband) and the features it offers.
+A Rails 7.1 application demonstrating how to use [Coverband](https://github.com/danmayer/coverband) for production code coverage tracking.
 
-Visit the live demo site [https://coverband-demo.herokuapp.com/](https://coverband-demo.herokuapp.com/)
+## Quick Start
 
-# Heroku Deployment
+### Prerequisites
 
-The demo site is hosted on Heroku.
+- Ruby 3.1+
+- Redis (for Coverband storage)
+- SQLite3
 
-- basic setup was done following the standard [Heroku Rails 5 Guide](https://devcenter.heroku.com/articles/getting-started-with-rails5)
+### Setup
 
-# Running with JRuby
+```bash
+bundle install
+rails db:create db:migrate
+rails server
+```
 
-This application runs both with CRuby (MRI) or JRuby. If you want to run via JRuby you can either update the `.ruby-version` to have `jruby`... Or you can one off switch over.
+Visit `http://localhost:3000` to see the app.
+
+### View Coverage Data
+
+The Coverband web UI is mounted at `/coverage`:
 
 ```
+http://localhost:3000/coverage
+```
+
+## Live Demo
+
+Visit the live demo site: [https://coverband-demo.herokuapp.com/](https://coverband-demo.herokuapp.com/)
+
+## Features Demonstrated
+
+- **Code Coverage Tracking**: See which lines of code are executed in production
+- **View Tracking**: Monitor which views/templates are rendered
+- **Route Tracking**: Track which routes are accessed
+- **Dead Code Detection**: Identify unused code paths
+
+## Configuration
+
+Coverband is configured in `config/coverband.rb`:
+
+```ruby
+Coverband.configure do |config|
+  config.store = Coverband::Adapters::HashRedisStore.new(Redis.new(url: ENV['REDIS_URL']))
+  config.track_views = true
+  config.track_routes = true
+end
+```
+
+## Running with JRuby
+
+This application supports both CRuby (MRI) and JRuby. To run with JRuby:
+
+```bash
+# Update .ruby-version to jruby, or:
 rvm use jruby
 bundle install
 bundle exec rails s
 ```
 
-# Theme
+## Deployment
 
-The initial design off the demo site was pulled from a demo'ed theme, a Material Design Bootstrap 4 Theme.
+### Heroku
 
-- [From Rails 5 to Bootstrap 4 — Responsive Admin Dashboard Template](https://medium.com/@frontted/from-rails-5-to-bootstrap-4-responsive-admin-dashboard-template-1de103c6216c)
+The demo site is hosted on Heroku. Basic setup follows the [Heroku Rails Guide](https://devcenter.heroku.com/articles/getting-started-with-rails7).
+
+Required add-ons:
+- Redis (for Coverband data storage)
+- PostgreSQL (for production database)
+
+## Theme
+
+The UI uses a Material Design Bootstrap theme based on:
 - [Hero Rails](https://github.com/frontted/hero-rails)
 
-# TODO
+## Contributing
 
-- more realistic Rails usage: - perhaps add something to help market coverband like show tweets - showcase different collection methods - thinking I could use it to demo the code observability concept via an API with document storage to attach arbitrary data to lines of code.
-- add deploy to Heroku button support
-- API to collect arbitrary line usage
-- API to collect perf data across CI runs
-  - client would post data on each benchmark run
-    - `ruby_version, branch or PR name, benchmark_name, calculations -> {data_point_name, i/s, total iterations, total time}, Comparison -> {data_point_name, i/s, diff calculation, note}`
-- a way to toggle modes?
-  - oneshot, simulated, or regular
-- investigate issues with runtime data vs load data when running `heroku run --app coverband-demo rake posts_cleanup` (note: COVERBAND_DISABLE_AT_EXIT fixes but then doesn't track rake, hmm not entirely true, not clear)
+1. Fork the repository
+2. Create your feature branch (`git checkout -b my-new-feature`)
+3. Commit your changes (`git commit -am 'Add some feature'`)
+4. Push to the branch (`git push origin my-new-feature`)
+5. Create a Pull Request
+
+## Related Projects
+
+- [Coverband](https://github.com/danmayer/coverband) - The main Coverband gem
+- [Coverband Service](https://github.com/coverband-service) - Hosted Coverband service
